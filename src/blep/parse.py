@@ -7,6 +7,7 @@ from flask import Flask, jsonify
 
 beacons = {}
 beacons_lock = threading.Lock()
+samples = {}
 
 def beacon_worker(subp):
     global beacons, beacons_lock
@@ -22,6 +23,7 @@ def beacon_worker(subp):
         print(r['MINOR'])
         with beacons_lock:
             beacons[r['MINOR']] = r
+            samples[r['MINOR']] = samples.get(r['MINOR'], 0) + 1
         subp.poll()
 
 app = Flask(__name__)
@@ -31,6 +33,13 @@ def index():
     global beacons, beacons_lock
     with beacons_lock:
         return jsonify(**beacons)
+
+@app.route("/debug")
+def debug():
+    global beacons, beacons_lock
+    with beacons_lock:
+        return jsonify(**samples)
+
 
 if __name__ == "__main__":
     subp = subprocess.Popen(['/bin/bash', './ibeacon_scan'], stdout=subprocess.PIPE,
