@@ -118,7 +118,7 @@ def drive_pwm(rpwm, lpwm):
     return bytes([146])+r_bytes+l_bytes
 
 def motors(side, vacuum, main, reverse_side, reverse_main):
-    byte = 0:
+    byte = 0
     if side:
         byte |= 1
     if vacuum:

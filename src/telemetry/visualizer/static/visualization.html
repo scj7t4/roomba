@@ -1,0 +1,33 @@
+<html>
+<head>
+    <script src="js/jquery-3.0.0.min.js"></script>
+    <script src="js/jquery.mousewheel.min.js"></script>
+    <script src="js/paper-core.min.js"></script>
+    <script src="js/visualizer.js"></script>
+    <style>
+    body
+    {
+        margin: 0px;
+        padding: 0px;
+    }
+    canvas[resize]
+    {
+        width: 100%;
+        height: 100%;
+    }
+    #sse
+    {
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        padding: 4px;
+        background-color: #000022;
+    }
+    </style>
+</head>
+<body>
+    <div id="sse">
+         <a href="javascript:load_ws()">Run WebSocket</a>
+      </div>
+    <canvas id="myCanvas" resize></canvas>
+</body>
