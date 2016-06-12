@@ -6,11 +6,11 @@ class SensorPacket:
     
     @property
     def uint(self):
-        return int.from_bytes(self.raw)
+        return int.from_bytes(self.raw, 'big')
 
     @property
     def int(self):
-        return int.from_bytes(self.raw, signed=True)
+        return int.from_bytes(self.raw, 'big', signed=True)
 
 class BumpAndWheelDrop(SensorPacket):
     packet_id = 7

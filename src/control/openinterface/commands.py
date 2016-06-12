@@ -95,8 +95,8 @@ def drive(velocity, radius):
         raise ValueError("Invalid velocity")
     if not (-2000 <= radius <= 2000):
         raise ValueError("Invalid radius")
-    v_bytes = velocity.to_bytes(2, 'big', True)
-    r_bytes = radius.to_bytes(2, 'big', True)
+    v_bytes = velocity.to_bytes(2, 'big', signed=True)
+    r_bytes = radius.to_bytes(2, 'big', signed=True)
     return bytes([137])+v_bytes+r_bytes
 
 def drive_direct(rvelocity, lvelocity):
@@ -104,8 +104,8 @@ def drive_direct(rvelocity, lvelocity):
         raise ValueError("Invalid right velocity")
     if not (-500 <= lvelocity <= 500):
         raise ValueError("Invalid left velocity")
-    r_bytes = rvelocity.to_bytes(2, 'big', True)
-    l_bytes = lvelocity.to_bytes(2, 'big', True)
+    r_bytes = rvelocity.to_bytes(2, 'big', signed=True)
+    l_bytes = lvelocity.to_bytes(2, 'big', signed=True)
     return bytes([145])+r_bytes+l_bytes
 
 def drive_pwm(rpwm, lpwm):
@@ -113,8 +113,8 @@ def drive_pwm(rpwm, lpwm):
         raise ValueError("Invalid right pwm")
     if not (-255 <= lpwm <= 255):
         raise ValueError("Invalid left pwm")
-    r_bytes = rpwm.to_bytes(2, 'big', True)
-    l_bytes = lpwm.to_bytes(2, 'big', True)
+    r_bytes = rpwm.to_bytes(2, 'big', signed=True)
+    l_bytes = lpwm.to_bytes(2, 'big', signed=True)
     return bytes([146])+r_bytes+l_bytes
 
 def motors(side, vacuum, main, reverse_side, reverse_main):
@@ -185,11 +185,11 @@ def song(slot, song):
         raise ValueError("Invalid song slot")
     if not all( [ 0 <= note <= 255 for (note, _) in song ] ):
         raise ValueError("Invalid note in song")
-    if not all( [ 0 <= duraction <= 255 for (_, duration) in song ]):
+    if not all( [ 0 <= duration <= 255 for (_, duration) in song ]):
         raise ValueError("Invalid duration in song")
     if not (1 <= length <= 16):
         raise ValueError("Song too long")
-    return bytes([140, slot, length] + [ item for sublist in l for item in sublist ])
+    return bytes([140, slot, length] + [ item for sublist in song for item in sublist ])
 
 def play(slot):
     if not (0 <= slot <= 4):
