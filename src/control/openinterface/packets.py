@@ -384,7 +384,7 @@ class RequestedRadius(SensorPacket):
         super().__init__(data)
 
     @property
-    def millimeters(self);
+    def millimeters(self):
         return self.int
 
 class RequestedRightVelocity(SensorPacket):

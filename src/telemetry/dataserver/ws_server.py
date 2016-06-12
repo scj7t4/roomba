@@ -4,14 +4,14 @@ import json
 import random
 
 async def server(websocket, path):
-    for i in range(2):
+    for i in range(2000):
         cmd = await websocket.recv()
         print("< {}".format(cmd))
 
         resp = {
-            'encoder_left': random.randint(0, 100),
-            'encoder_right': random.randint(100, 200),
-            'delta_t': random.uniform(1,2)
+            'encoder_left': random.randint(0, 150),
+            'encoder_right': random.randint(0, 150),
+            'delta_t': random.uniform(2,3)
         }
         j = json.dumps(resp)
         await websocket.send(j)

@@ -41,14 +41,14 @@ function kinematics_position(x, y, theta, encoder_dl, encoder_dr, delta_t)
     
         theta_p = theta + odt;
         x_p = pcos * (x-icc_x) - psin * (y-icc_y) + (icc_x);
-        y_p = -(psin * (x-icc_x) + pcos * (y-icc_y) + (icc_y));
+        y_p = (psin * (x-icc_x) + pcos * (y-icc_y) + (icc_y));
         linear = false;
     }
     else
     {
         theta_p = theta;
         x_p = x + kv.vr * Math.cos(theta) * delta_t;
-        y_p = -(y + kv.vr * Math.sin(theta) * delta_t);
+        y_p = (y + kv.vr * Math.sin(theta) * delta_t);
         linear = true;
     }
     return {'x': x_p, 'y': y_p, 'theta': theta_p, 'linear': linear};
@@ -90,6 +90,8 @@ function draw_path(x, y, theta, encoder_dl, encoder_dr, delta_t)
         var mid = new paper.Point(kp_mid.x, kp_mid.y);
         var path = new paper.Path.Arc(from, mid, final);
         path.strokeColor = "#000";
+        var circl = new paper.Path.Circle(mid, 5);
+        circl.strokeColor = "#00f";
     }
     else
     {
