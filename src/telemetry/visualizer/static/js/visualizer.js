@@ -90,17 +90,15 @@ function draw_path(x, y, theta, encoder_dl, encoder_dr, delta_t)
         var mid = new paper.Point(kp_mid.x, kp_mid.y);
         var path = new paper.Path.Arc(from, mid, final);
         path.strokeColor = "#000";
-        var circl = new paper.Path.Circle(mid, 5);
-        circl.strokeColor = "#00f";
+        //var circl = new paper.Path.Circle(mid, 5);
+        //circl.strokeColor = "#00f";
     }
     else
     {
         var path = new paper.Path.Line(from, final);
         path.strokeColor = "#000";
     }
-    var circl = new paper.Path.Circle(final, 7);
-    circl.strokeColor = "#f00"
-    circl.fillColor = "#f00"
+    current_location.position = final;
 
     restore_pos();
     return kp_final;
@@ -118,7 +116,7 @@ function change_zoom_centered(delta, pos)
 
 function load_ws()
 {
-    var ws = new WebSocket("ws://localhost:9998/live");
+    var ws = new WebSocket("ws://192.168.1.71:9998/live");
 
     ws.onopen = function()
     {
@@ -151,8 +149,14 @@ window.onload = function() {
     var anchor2 = new paper.Path.Circle(ANCHORBOUND,ANCHORBOUND,2);
     anchor2.strokeColor = "#000";
 
+    current_location = new paper.Path.Circle(new paper.Point(0,0), 5);
+    current_location.strokeColor = "#f00"
+    current_location.fillColor = "#f00"
+
+    
     draw_path(0,0,0,100,100,1);
     draw_path(0,0,0,100,150,1);
+
 
     //lyr_roomba.scale(1, -1);
     //lyr_roomba.position.y += lyr_roomba.bounds.height;
