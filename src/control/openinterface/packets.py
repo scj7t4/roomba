@@ -12,6 +12,9 @@ class SensorPacket:
     def int(self):
         return int.from_bytes(self.raw, 'big', signed=True)
 
+    def __repr__(self):
+        return "<Sensor.{}: u{}/s{}>".format(type(self).__name__, self.uint, self.int)
+
 class BumpAndWheelDrop(SensorPacket):
     packet_id = 7
     size = 1
@@ -463,7 +466,7 @@ class BumpSignal(SensorPacket):
         super().__init__(data)
 
     def strength(self):
-        return bool(self.uint)
+        return self.uint
 
 class LightBumpLeftSignal(BumpSignal):
     packet_id = 46
@@ -563,19 +566,22 @@ class SensorPacketFactory:
         self.conv = {}
         for ctype in self.classes:
             self.conv[ctype[1].packet_id] = ctype
-    def parse(self, data, output):
-        c = 0
+    def parse(self, data):
+        # Data is a packet with checksums & everything
+        c = 2
         objs = {}
-        while c < len(data):
+        while c < len(data)-1:
             ptype = data[c]
             c += 1
             try:
                 stype, otype = self.conv[ptype]
             except KeyError:
-                raise ValueError("Invalid sensor packet type")
+                raise ValueError("Invalid sensor packet type at {}".format(c))
             nc = c + otype.size
-            obj = otype(data[c:nc])
-            c += nc
+            inp = data[c:nc]
+            obj = otype(inp)
+            #print((c-1, ptype, list(inp), obj, nc, c+nc))
+            c = nc
             objs[stype] = obj
         return objs
 

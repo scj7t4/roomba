@@ -1,4 +1,4 @@
-import packets
+from . import packets
 
 def validate_sensor_packet(pkt_id):
     if 0 <= pkt_id <= 58 or 100 <= pkt_id <= 107:
@@ -24,7 +24,7 @@ def pause_resume(reset):
     return bytes([150, 1 if reset else 0])
 
 def validate_packet(data):
-    if int.from_bytes(data[0] != 19:
+    if data[0] != 19:
         raise ValueError("Data does not contain a packet stream")
     if len(data)+3 < data[1]:
         raise BufferError("Data does not contain full packet")
@@ -33,50 +33,58 @@ def validate_packet(data):
     return (data[0:data[1]+3], data[data[1]+3:])
 
 class PacketStreamer:
-    def __init__(self, serial_conn, packets):
+    def __init__(self, serial_conn, pkts):
         self.ser = serial_conn
-        self.packets = packets
+        self.packets = pkts
         self.state = 'new'
         self.buffer = bytes([])
         self.last_pkt = None
         self.factory = packets.SensorPacketFactory()
 
     def start(self):
-        cmd = stream(packets)
-        ser.write(cmd)
+        self.freshen()
+        cmd = stream(self.packets)
+        self.ser.write(cmd)
         state = 'streaming'
 
     def pause(self):
         if self.state == 'streaming':
             cmd = pause_resume(False)
-            ser.write(cmd)
+            self.ser.write(cmd)
             state = 'paused'
 
     def resume(self):
         if self.state == 'paused':
+            self.freshen()
             cmd = pause_resume(True)
-            ser.write(cmd)
+            self.ser.write(cmd)
             state = 'streaming'
 
     def read_raw(self):
         aligned = False
         while not aligned:
-            self.buffer += ser.read(64)
+            tmp = self.ser.read(64)
+            if not tmp:
+                return None
+            self.buffer += tmp
             try:
-                (pkt, rem) = validate_packet(read_bytes)
+                (pkt, rem) = validate_packet(self.buffer)
                 self.buffer = rem
                 aligned = True
                 self.last_pkt = pkt
             except (ValueError, IOError):
                 while self.buffer and self.buffer[0] != 19:
-                    read_bytes = read_bytes[1:]
+                    self.buffer = self.buffer[1:]
             except BufferError:
                 continue
         return self.last_pkt
 
     def read(self):
         pkt = self.read_raw()
-        return self.factory.parse(pkt[2:])
+        if pkt:
+            return self.factory.parse(pkt)
+        else:
+            return pkt
 
     def freshen(self):
         self.ser.reset_input_buffer()
