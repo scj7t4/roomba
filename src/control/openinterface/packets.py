@@ -573,7 +573,9 @@ class SensorPacketFactory:
                 stype, otype = self.conv[ptype]
             except KeyError:
                 raise ValueError("Invalid sensor packet type")
-            obj = otype(data[c:c+otype.size])
+            nc = c + otype.size
+            obj = otype(data[c:nc])
+            c += nc
             objs[stype] = obj
         return objs
 
